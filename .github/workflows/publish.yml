@@ -28,34 +28,33 @@ jobs:
           rc-wording: RELEASE,alpha
           commit-message: 'CI: bumps version to {{version}} [skip ci]'
 
-  # # Automatically create binary executables:
-  # TODO
-  # publish-binary:
-  #   runs-on: ubuntu-latest
-  #   needs: prepare
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-node@v1
-  #       with:
-  #         node-version: 12
-  #     - run: npx pkg . --out-dir ./exec/
-  #     - uses: xresloader/upload-to-github-release@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         file: './exec/*'
-  #         draft: false
-
-  publish-npm:
+  # Automatically create binary executables:
+  publish-binary:
     runs-on: ubuntu-latest
     needs: prepare
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          always-auth: true
-          node-version: 12.x
-          registry-url: https://registry.npmjs.org/
-      - run: yarn publish
+          node-version: 12
+      - run: npx pkg . --out-dir ./exec/
+      - uses: xresloader/upload-to-github-release@v1
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: './exec/*'
+          draft: false
+
+  # publish-npm:
+  #   runs-on: ubuntu-latest
+  #   needs: prepare
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v1
+  #       with:
+  #         always-auth: true
+  #         node-version: 12.x
+  #         registry-url: https://registry.npmjs.org/
+  #     - run: yarn publish
+  #       env:
+  #         NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
