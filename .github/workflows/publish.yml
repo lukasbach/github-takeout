@@ -1,0 +1,61 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  # push:
+  #   tags:
+  #     - 'v*'
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: yarn
+      - run: yarn build
+      - run: yarn lint:test
+      - run: yarn test
+      - name: Version Bump
+        id: versionbump
+        uses: phips28/gh-action-bump-version@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          default: patch
+          minor-wording: add,Adds,new
+          major-wording: MAJOR,cut-major
+          patch-wording: patch,fixes
+          rc-wording: RELEASE,alpha
+          commit-message: 'CI: bumps version to {{version}} [skip ci]'
+
+  # # Automatically create binary executables:
+  # TODO
+  # publish-binary:
+  #   runs-on: ubuntu-latest
+  #   needs: prepare
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v1
+  #       with:
+  #         node-version: 12
+  #     - run: npx pkg . --out-dir ./exec/
+  #     - uses: xresloader/upload-to-github-release@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         file: './exec/*'
+  #         draft: false
+
+  publish-npm:
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          always-auth: true
+          node-version: 12.x
+          registry-url: https://registry.npmjs.org/
+      - run: yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
