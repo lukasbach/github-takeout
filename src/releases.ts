@@ -2,10 +2,8 @@ import prompts from "prompts";
 import path from "path";
 import * as fs from "fs-extra";
 import mustache from "mustache";
-import sanitize from "sanitize-html";
-import { marked } from "marked";
-import { releaseReportReleaseIndexTemplate } from "./templates";
-import { all, Config, downloadBigFile, downloadFile } from "./common";
+import { releaseReportTemplate } from "./templates";
+import { all, Config, downloadBigFile } from "./common";
 
 export const downloadReleases = async ({ octokit, iterate, username, ...config }: Config) => {
   if (!config.features.includes("releases")) {
@@ -23,35 +21,45 @@ export const downloadReleases = async ({ octokit, iterate, username, ...config }
     ],
   });
 
+  const { allReleases } = await prompts({
+    type: "toggle",
+    name: "allReleases",
+    message: "Do you want to download all releases, or only the latest one?",
+    initial: false,
+    active: "Download all releases",
+    inactive: "Only latest one",
+  });
+
   console.log(`Downloading releases...`);
 
   await all(
     config.repos.map(({ name }) => async () => {
       const folder = path.join(config.output, name, "releases");
       await fs.ensureDir(folder);
-      const releases = await iterate(octokit.rest.repos.listReleases, {
-        owner: username,
-        repo: name,
-      });
+      const releases = allReleases
+        ? await iterate(octokit.rest.repos.listReleases, {
+            owner: username,
+            repo: name,
+          })
+        : [(await octokit.rest.repos.getLatestRelease({ owner: username, repo: name })).data];
 
-      console.log(`Found ${releases.length} releases for ${username}/${name}`);
+      if (allReleases) {
+        console.log(`Found ${releases.length} releases for ${username}/${name}`);
+      }
 
       if (whatToDownload.includes("report")) {
         await fs.writeFile(
           path.join(folder, `/index.html`),
-          mustache.render(releaseReportReleaseIndexTemplate, { releases, username, repo: name })
+          mustache.render(releaseReportTemplate, { releases, username, repo: name })
         );
       }
 
       await all(
         releases.map(release => async () => {
-          console.log(`Downloading release ${username}/${name}#${release.name}...`);
+          console.log(`Downloading release ${username}/${name} ${release.name}...`);
           const releaseFolder = path.join(folder, `${release.tag_name ?? release.name}`);
 
           await fs.ensureDir(releaseFolder);
-
-          if (whatToDownload.includes("report")) {
-          }
 
           if (whatToDownload.includes("assets")) {
             await all(
