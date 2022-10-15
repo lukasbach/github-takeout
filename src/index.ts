@@ -8,6 +8,7 @@ import * as OctokitTypes from "@octokit/types";
 import { setupFileStructure } from "./file-structure";
 import { Config } from "./types";
 import { cloneCode } from "./code";
+import { zipOutput } from "./zip";
 
 program.version(JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), { encoding: "utf-8" })).version);
 
@@ -86,4 +87,5 @@ program.parse(process.argv);
 
   await setupFileStructure(config);
   await cloneCode(config);
+  await zipOutput(config);
 })();
