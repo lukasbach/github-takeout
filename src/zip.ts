@@ -8,6 +8,8 @@ export const zipOutput = async (config: Config) => {
     return;
   }
 
+  console.log(`Zipping output...`);
+
   await all(
     config.repos.map(({ name }) => async () => {
       const folder = path.join(config.output, name);
@@ -20,6 +22,7 @@ export const zipOutput = async (config: Config) => {
         await tar(folder, `${folder}.tar`, { compression: config.compression });
       }
       await fs.remove(folder);
-    })
+    }),
+    3
   );
 };

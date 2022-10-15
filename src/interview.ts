@@ -48,7 +48,7 @@ export const interview = async () => {
   const repos = await iterate(isOrg ? octokit.rest.repos.listForOrg : octokit.rest.repos.listForUser, {
     username,
     type: "all",
-  });
+  }); // .filter(({owner}) => true);
 
   console.log(`Found ${repos.length} repos`);
 
@@ -168,7 +168,7 @@ export const interview = async () => {
     shouldZip,
     compression,
     octokit,
-    repos: repos.filter(({ name }) => name === "pauspapier"), // TODO!!
+    repos, // : repos.filter(({ name }) => name === "pauspapier"), // TODO!!
     initialRatelimit,
   };
 

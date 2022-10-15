@@ -8,6 +8,7 @@ import { zipOutput } from "./zip";
 import { downloadIssues } from "./issues";
 import { downloadReleases } from "./releases";
 import { interview } from "./interview";
+import { all } from "./common";
 
 program.version(JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), { encoding: "utf-8" })).version);
 
@@ -16,9 +17,14 @@ program.parse(process.argv);
 (async () => {
   const config = await interview();
   await setupFileStructure(config);
-  await cloneCode(config);
-  await downloadIssues(config);
-  await downloadReleases(config);
+  await all(
+    config.repos.map(repo => async () => {
+      await cloneCode(config, repo);
+      await downloadIssues(config, repo);
+      await downloadReleases(config, repo);
+    }),
+    5
+  );
   await zipOutput(config);
 
   console.log("You are done!");

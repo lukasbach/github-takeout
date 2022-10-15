@@ -12,6 +12,11 @@ type IterateFunc = <R extends OctokitTypes.RequestInterface>(
   parameters?: Parameters<R>[0]
 ) => Promise<OctokitTypes.GetResponseTypeFromEndpointMethod<R>["data"]>;
 
+export type Repo = (
+  | RestEndpointMethodTypes["repos"]["listForOrg"]
+  | RestEndpointMethodTypes["repos"]["listForUser"]
+)["response"]["data"][0];
+
 export interface Config {
   isOrg: boolean;
   username: string;
@@ -25,10 +30,7 @@ export interface Config {
   shouldZip: "no" | "zip" | "tar";
   compression: number;
   octokit: Octokit;
-  repos: (
-    | RestEndpointMethodTypes["repos"]["listForOrg"]
-    | RestEndpointMethodTypes["repos"]["listForUser"]
-  )["response"]["data"];
+  repos: Repo[];
   initialRatelimit: { limit: number; remaining: number };
 }
 
