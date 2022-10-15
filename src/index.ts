@@ -9,6 +9,7 @@ import { setupFileStructure } from "./file-structure";
 import { Config } from "./types";
 import { cloneCode } from "./code";
 import { zipOutput } from "./zip";
+import { downloadIssues } from "./issues";
 
 program.version(JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), { encoding: "utf-8" })).version);
 
@@ -81,11 +82,13 @@ program.parse(process.argv);
     isOrg,
     features,
     iterate,
+    octokit,
     output: path.resolve(process.cwd(), output),
     repos: repos.filter(({ name }) => name === "react-complex-tree"), // TODO!!
   };
 
   await setupFileStructure(config);
   await cloneCode(config);
+  await downloadIssues(config);
   await zipOutput(config);
 })();

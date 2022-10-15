@@ -1,5 +1,5 @@
 import * as OctokitTypes from "@octokit/types";
-import { RestEndpointMethodTypes } from "@octokit/rest";
+import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 
 type IterateFunc = <R extends OctokitTypes.RequestInterface>(
   request: R,
@@ -12,6 +12,7 @@ export interface Config {
   features: string[];
   iterate: IterateFunc;
   output: string;
+  octokit: Octokit;
   repos: (
     | RestEndpointMethodTypes["repos"]["listForOrg"]
     | RestEndpointMethodTypes["repos"]["listForUser"]
