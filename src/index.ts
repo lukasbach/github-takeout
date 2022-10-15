@@ -1,7 +1,4 @@
 #!/usr/bin/env node
-import { program } from "commander";
-import * as fs from "fs-extra";
-import * as path from "path";
 import { setupFileStructure } from "./file-structure";
 import { cloneCode } from "./code";
 import { zipOutput } from "./zip";
@@ -10,10 +7,6 @@ import { downloadReleases } from "./releases";
 import { interview } from "./interview";
 import { all } from "./common";
 import { downloadGeneralMetaData, downloadRepoMetaData } from "./meta";
-
-program.version(JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), { encoding: "utf-8" })).version);
-
-program.parse(process.argv);
 
 (async () => {
   const config = await interview();

@@ -2013,13 +2013,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^9.4.1":
-  version: 9.4.1
-  resolution: "commander@npm:9.4.1"
-  checksum: bfb18e325a5bdf772763c2213d5c7d9e77144d944124e988bcd8e5e65fb6d45d5d4e86b09155d0f2556c9a59c31e428720e57968bcd050b2306e910a0bf3cf13
-  languageName: node
-  linkType: hard
-
 "compress-commons@npm:^4.1.0":
   version: 4.1.1
   resolution: "compress-commons@npm:4.1.1"
@@ -3109,7 +3102,6 @@ __metadata:
     "@types/sanitize-html": ^2.6.2
     "@typescript-eslint/eslint-plugin": ^5.40.0
     "@typescript-eslint/parser": ^5.40.0
-    commander: ^9.4.1
     eslint: ^8.25.0
     eslint-config-airbnb: ^19.0.4
     eslint-config-airbnb-typescript: ^17.0.0
