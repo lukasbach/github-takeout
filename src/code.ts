@@ -21,7 +21,7 @@ export const cloneCode = async (config: Config) => {
   });
 
   await all(
-    config.repos.map(async ({ clone_url, name }) => {
+    config.repos.map(({ clone_url, name }) => async () => {
       const repoPath = path.join(config.output, name, "code");
       console.log(`${name}: Cloning ${clone_url} to ${repoPath}...`);
       await fs.ensureDir(repoPath);

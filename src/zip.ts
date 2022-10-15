@@ -32,7 +32,7 @@ export const zipOutput = async (config: Config) => {
   });
 
   await all(
-    config.repos.map(async ({ name }) => {
+    config.repos.map(({ name }) => async () => {
       const folder = path.join(config.output, name);
       if (whatToDo === "zip") {
         console.log(`Zipping ${folder}...`);

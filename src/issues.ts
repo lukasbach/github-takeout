@@ -27,7 +27,7 @@ export const downloadIssues = async ({ octokit, iterate, username, ...config }: 
   console.log(`Downloading issues...`);
 
   await all(
-    config.repos.map(async ({ name }) => {
+    config.repos.map(({ name }) => async () => {
       const folder = path.join(config.output, name, "issues");
       await fs.ensureDir(folder);
       const issues = await iterate(octokit.rest.issues.listForRepo, {
@@ -46,7 +46,7 @@ export const downloadIssues = async ({ octokit, iterate, username, ...config }: 
       }
 
       await all(
-        issues.map(async issue => {
+        issues.map(issue => async () => {
           console.log(`Downloading issue ${username}/${name}#${issue.number}...`);
           const comments = await iterate(octokit.rest.issues.listComments, {
             owner: username,

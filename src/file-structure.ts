@@ -27,7 +27,7 @@ export const setupFileStructure = async (config: Config) => {
   }
 
   await all(
-    config.repos.map(async ({ name }) => {
+    config.repos.map(({ name }) => async () => {
       await fs.ensureDir(path.join(config.output, name));
       await fs.outputJSON(path.join(config.output, name, "repo.json"), config);
     })

@@ -10,6 +10,7 @@ import { Config } from "./common";
 import { cloneCode } from "./code";
 import { zipOutput } from "./zip";
 import { downloadIssues } from "./issues";
+import { downloadReleases } from "./releases";
 
 program.version(JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), { encoding: "utf-8" })).version);
 
@@ -89,12 +90,13 @@ program.parse(process.argv);
     iterate,
     octokit,
     output: path.resolve(process.cwd(), output),
-    repos: repos.filter(({ name }) => name === "react-complex-tree"), // TODO!!
+    repos: repos.filter(({ name }) => name === "pauspapier"), // TODO!!
   };
 
   await setupFileStructure(config);
   await cloneCode(config);
   await downloadIssues(config);
+  await downloadReleases(config);
   await zipOutput(config);
 
   console.log("You are done!");
@@ -105,5 +107,4 @@ program.parse(process.argv);
     `\n\nRate Limit details\nYou currently have ${finalRateLimit.remaining} of ${finalRateLimit.limit} requests remaining.`
   );
   console.log(`This used up ${initialRatelimit.remaining - finalRateLimit.remaining} requests.`);
-  console.log(`Your rate limit will reset in ${finalRateLimit.reset}TODO minutes.`);
 })();

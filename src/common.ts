@@ -1,6 +1,12 @@
 import * as OctokitTypes from "@octokit/types";
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import * as fs from "fs-extra";
+import * as https from "https";
+import { pipeline } from "node:stream";
+import { promisify } from "node:util";
+import { createWriteStream } from "fs-extra";
+
+const streamPipeline = promisify(pipeline);
 
 type IterateFunc = <R extends OctokitTypes.RequestInterface>(
   request: R,
@@ -43,11 +49,18 @@ export const downloadFile = async (url: string, target: string, isJson = false, 
   }
 };
 
-export const all = async <T>(values: Array<PromiseLike<T>>): Promise<Awaited<T>[]> => {
-  const results: Awaited<T>[] = [];
+export const downloadBigFile = async (url: string, target: string) => {
+  const { default: fetch } = await import("node-fetch");
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`unexpected response ${response.statusText} when fetching ${url}`);
+  await streamPipeline(response.body, createWriteStream(target));
+};
+
+export const all = async <T>(values: Array<() => Promise<T>>, batch = 10): Promise<T[]> => {
+  const results: T[] = [];
   while (values.length) {
     // eslint-disable-next-line no-await-in-loop
-    results.push(...(await Promise.all(values.splice(0, 10))));
+    results.push(...(await Promise.all(values.splice(0, batch).map(f => f()))));
   }
   return results;
 };
