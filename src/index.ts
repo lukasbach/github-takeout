@@ -9,6 +9,7 @@ import { downloadIssues } from "./issues";
 import { downloadReleases } from "./releases";
 import { interview } from "./interview";
 import { all } from "./common";
+import { downloadGeneralMetaData, downloadRepoMetaData } from "./meta";
 
 program.version(JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), { encoding: "utf-8" })).version);
 
@@ -17,11 +18,13 @@ program.parse(process.argv);
 (async () => {
   const config = await interview();
   await setupFileStructure(config);
+  await downloadGeneralMetaData(config);
   await all(
     config.repos.map(repo => async () => {
       await cloneCode(config, repo);
       await downloadIssues(config, repo);
       await downloadReleases(config, repo);
+      await downloadRepoMetaData(config, repo);
     }),
     5
   );

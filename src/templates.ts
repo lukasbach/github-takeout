@@ -83,3 +83,29 @@ export const releaseReportTemplate = `
   </body>
 </html>
 `;
+
+export const metaContainerTemplate = `
+<html>
+  <head>
+    <title>{{ domain }} {{ kind }}</title>
+  </head>
+  <body>
+    <h1>{{ kind }} for {{ domain }}</h1>
+    <p>{{ count }} items.</p>
+    <ul>
+    {{{ list }}}
+    </ul>
+  </body>
+</html>
+`;
+
+export const metaTemplates = {
+  mystars: `<li><a href="{{ html_url }}">{{ full_name }}: {{ description }}</a> <small>({{ stargazers_count }} stars)</small></li>`,
+  mywatching: `<li><a href="{{ html_url }}">{{ full_name }}: {{ description }}</a> <small>({{ stargazers_count }} stars)</small></li>`,
+  stars: `<li><a href="{{ html_url }}">{{ login }}</a></li>`,
+  watchers: `<li><a href="{{ html_url }}">{{ login }}</a></li>`,
+  artifacts: `<li><a href="{{ archive_download_url }}" title="Created at {{ created_at }}">{{ name }}</a> ({{ size_in_bytes }} bytes)</li>`,
+  secrets: `<li>{{ name }}</li>`,
+  deploykeys: `<li>{{ title }}: {{ key }}</li>`,
+  contributors: `<li><a href="{{ html_url }}">{{ login }}</a>: {{ contributions }} contributions</li>`,
+};

@@ -84,6 +84,11 @@ export const interview = async () => {
       { title: "Code repo", description: "Requires git installed locally", value: "code", selected: true },
       { title: "Issues including PR diffs", value: "issues", selected: true },
       { title: "Releases", value: "releases", selected: true },
+      {
+        title: "Meta info (Stargazers, contributor lists, deploy keys...)",
+        value: "meta",
+        description: "Make sure the auth token has all necessary scopes",
+      },
     ],
   });
 
@@ -128,6 +133,32 @@ export const interview = async () => {
     inactive: "Only latest one",
   });
 
+  const { metaDownloadOption } = await prompts({
+    type: features.includes("meta") ? "multiselect" : null,
+    name: "metaDownloadOption",
+    message: "Which kind of meta data do you want to download?",
+    choices: [
+      { title: "List of repos starred by me", value: "mystars", selected: true },
+      { title: "List of repos watched by me", value: "mywatching", selected: true },
+      { title: "List of stargazers on my repos", value: "stars", selected: true },
+      { title: "List of watchers on my repos", value: "watchers", selected: true },
+      { title: "List of artifacts for my repos", value: "artifacts", selected: true },
+      { title: "List of repo secrets", value: "secrets", selected: true },
+      { title: "List of deploy keys", value: "deploykeys", selected: true },
+      { title: "List of contributors for my repos", value: "contributors", selected: true },
+    ],
+  });
+
+  const { metaDownloadOption2 } = await prompts({
+    type: features.includes("meta") ? "multiselect" : null,
+    name: "metaDownloadOption2",
+    message: "In which form do you want to download meta data?",
+    choices: [
+      { title: "HTML Description", value: "report", selected: true },
+      { title: "JSON Dump", value: "json", selected: true },
+    ],
+  });
+
   const { shouldZip } = await prompts({
     type: "select",
     name: "shouldZip",
@@ -168,7 +199,9 @@ export const interview = async () => {
     shouldZip,
     compression,
     octokit,
-    repos, // : repos.filter(({ name }) => name === "pauspapier"), // TODO!!
+    metaDownloadOption,
+    metaDownloadOption2,
+    repos: repos.filter(({ name }) => name === "react-complex-tree"), // TODO!!
     initialRatelimit,
   };
 

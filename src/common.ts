@@ -4,6 +4,7 @@ import * as fs from "fs-extra";
 import { pipeline } from "node:stream";
 import { promisify } from "node:util";
 import { createWriteStream } from "fs-extra";
+import fetch from "node-fetch";
 
 const streamPipeline = promisify(pipeline);
 
@@ -27,6 +28,10 @@ export interface Config {
   issueDownloadOption: Array<"report" | "diff" | "patch" | "json">;
   releasesDownloadOption: Array<"report" | "assets" | "json">;
   downloadAllReleases: boolean;
+  metaDownloadOption: Array<
+    "mystars" | "mywatching" | "stars" | "watchers" | "artifacts" | "secrets" | "deploykeys" | "contributors"
+  >;
+  metaDownloadOption2: Array<"report" | "json">;
   shouldZip: "no" | "zip" | "tar";
   compression: number;
   octokit: Octokit;
@@ -35,7 +40,6 @@ export interface Config {
 }
 
 export const downloadFile = async (url: string, target: string, isJson = false, attempts = 0) => {
-  const { default: fetch } = await import("node-fetch");
   try {
     const resp = await fetch(url);
     if (isJson) {
@@ -58,7 +62,6 @@ export const downloadFile = async (url: string, target: string, isJson = false, 
 };
 
 export const downloadBigFile = async (url: string, target: string) => {
-  const { default: fetch } = await import("node-fetch");
   const response = await fetch(url);
   if (!response.ok) throw new Error(`unexpected response ${response.statusText} when fetching ${url}`);
   await streamPipeline(response.body, createWriteStream(target));
