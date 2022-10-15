@@ -4,8 +4,8 @@
     "declaration": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
-    "module": "CommonJS",
-    "target": "ES6",
+    "module": "Node16",
+    "target": "es2017",
     "moduleResolution": "Node"
   },
   "include": ["src"],
