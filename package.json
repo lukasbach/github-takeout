@@ -1,6 +1,6 @@
 {
   "name": "github-takeout",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A utility for cloning all your repos, including issues, discussions, stargazers and more!",
   "bin": "lib/cjs/index.js",
   "main": "lib/cjs/index.js",
