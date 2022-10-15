@@ -12,7 +12,8 @@
   "license": "MIT",
   "files": [
     "lib/**/*",
-    "!lib/**/*.spec.js"
+    "!lib/**/*.spec.js",
+    "demo.gif"
   ],
   "scripts": {
     "start": "ts-node ./src/index.ts",

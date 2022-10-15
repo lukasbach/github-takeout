@@ -5,6 +5,8 @@
 ![Pretty](https://github.com/lukasbach/github-takeout/workflows/verify/badge.svg)
 ![Testing](https://github.com/lukasbach/github-takeout/workflows/publish/badge.svg)
 
+![Demo](./demo.gif)
+
 ## How to use
 
 Install globally via

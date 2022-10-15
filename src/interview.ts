@@ -38,11 +38,16 @@ export const interview = async () => {
     request: R,
     parameters?: Parameters<R>[0]
   ): Promise<OctokitTypes.GetResponseTypeFromEndpointMethod<R>["data"]> {
-    const asyncIterator = octokit.paginate.iterator(request, parameters);
-    const arr: any[] = [];
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const i of asyncIterator) arr.push(i);
-    return arr.reduce((acc, cur) => acc.concat(cur.data), []);
+    try {
+      const asyncIterator = octokit.paginate.iterator(request, parameters);
+      const arr: any[] = [];
+      // eslint-disable-next-line no-restricted-syntax
+      for await (const i of asyncIterator) arr.push(i);
+      return arr.reduce((acc, cur) => acc.concat(cur.data), []);
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
   }
 
   const repos = await iterate(isOrg ? octokit.rest.repos.listForOrg : octokit.rest.repos.listForUser, {
