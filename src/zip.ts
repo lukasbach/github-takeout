@@ -1,46 +1,23 @@
-import { zip, tar, COMPRESSION_LEVEL } from "zip-a-folder";
-import prompts from "prompts";
+import { zip, tar } from "zip-a-folder";
 import path from "path";
 import * as fs from "fs-extra";
 import { all, Config } from "./common";
 
 export const zipOutput = async (config: Config) => {
-  const { whatToDo } = await prompts({
-    type: "select",
-    name: "whatToDo",
-    message: "Do you want to compress the output for each repo in an archive?",
-    choices: [
-      { title: "No", value: "no" },
-      { title: "As Zip files", value: "zip" },
-      { title: "As Tar files", value: "tar" },
-    ],
-  });
-
-  if (whatToDo === "no") {
+  if (config.shouldZip === "no") {
     return;
   }
-
-  const { compression } = await prompts({
-    type: "select",
-    name: "compression",
-    message: "With which compression level do you want to compress the files?",
-    choices: [
-      { title: "High", value: COMPRESSION_LEVEL.high },
-      { title: "Medium", value: COMPRESSION_LEVEL.medium },
-      { title: "Uncompressed", value: COMPRESSION_LEVEL.uncompressed },
-    ],
-  });
 
   await all(
     config.repos.map(({ name }) => async () => {
       const folder = path.join(config.output, name);
-      if (whatToDo === "zip") {
+      if (config.shouldZip === "zip") {
         console.log(`Zipping ${folder}...`);
-        await zip(folder, `${folder}.zip`, { compression });
+        await zip(folder, `${folder}.zip`, { compression: config.compression });
       }
-      if (whatToDo === "tar") {
+      if (config.shouldZip === "tar") {
         console.log(`Tarring ${folder}...`);
-        await tar(folder, `${folder}.tar`, { compression });
+        await tar(folder, `${folder}.tar`, { compression: config.compression });
       }
       await fs.remove(folder);
     })

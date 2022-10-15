@@ -1,4 +1,3 @@
-import prompts from "prompts";
 import path from "path";
 import * as fs from "fs-extra";
 import mustache from "mustache";
@@ -11,18 +10,6 @@ export const downloadIssues = async ({ octokit, iterate, username, ...config }: 
   if (!config.features.includes("issues")) {
     return;
   }
-
-  const { whatToDownload } = await prompts({
-    type: "multiselect",
-    name: "whatToDownload",
-    message: "Which kind of issue data do you want to download?",
-    choices: [
-      { title: "HTML Thread", value: "report", selected: true },
-      { title: ".diff files for PRs", value: "diff", selected: true },
-      { title: ".patch files for PRs", value: "patch", selected: true },
-      { title: "JSON Dump", value: "json", selected: true },
-    ],
-  });
 
   console.log(`Downloading issues...`);
 
@@ -38,7 +25,7 @@ export const downloadIssues = async ({ octokit, iterate, username, ...config }: 
 
       console.log(`Found ${issues.length} issues for ${username}/${name}`);
 
-      if (whatToDownload.includes("report")) {
+      if (config.issueDownloadOption.includes("report")) {
         await fs.writeFile(
           path.join(folder, `/index.html`),
           mustache.render(reportIndexTemplate, { issues, username, repo: name })
@@ -58,16 +45,16 @@ export const downloadIssues = async ({ octokit, iterate, username, ...config }: 
           (issue as any).comments = comments;
 
           if (
-            !whatToDownload.includes("diff") &&
-            !whatToDownload.includes("patch") &&
-            !whatToDownload.includes("report")
+            !config.issueDownloadOption.includes("diff") &&
+            !config.issueDownloadOption.includes("patch") &&
+            !config.issueDownloadOption.includes("report")
           ) {
             return;
           }
 
           await fs.ensureDir(path.join(folder, `${issue.number}`));
 
-          if (whatToDownload.includes("report")) {
+          if (config.issueDownloadOption.includes("report")) {
             const html = mustache.render(reportIssueTemplate, {
               ...issue,
               comments: comments.map(comment => ({
@@ -82,18 +69,18 @@ export const downloadIssues = async ({ octokit, iterate, username, ...config }: 
           }
 
           if (issue.pull_request) {
-            if (whatToDownload.includes("diff") && issue.pull_request.diff_url) {
+            if (config.issueDownloadOption.includes("diff") && issue.pull_request.diff_url) {
               await downloadFile(issue.pull_request.diff_url, path.join(folder, `${issue.number}/pr.diff`));
             }
 
-            if (whatToDownload.includes("patch") && issue.pull_request.patch_url) {
+            if (config.issueDownloadOption.includes("patch") && issue.pull_request.patch_url) {
               await downloadFile(issue.pull_request.patch_url, path.join(folder, `${issue.number}/pr.patch`));
             }
           }
         })
       );
 
-      if (whatToDownload.includes("json")) {
+      if (config.issueDownloadOption.includes("json")) {
         await fs.writeJSON(path.join(folder, "issues.json"), issues);
       }
     })

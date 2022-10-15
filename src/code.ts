@@ -1,6 +1,5 @@
 import * as fs from "fs-extra";
 import path from "path";
-import prompts from "prompts";
 import { simpleGit } from "simple-git";
 import { all, Config } from "./common";
 
@@ -11,15 +10,6 @@ export const cloneCode = async (config: Config) => {
 
   console.log(`Cloning code...`);
 
-  const { allBranches } = await prompts({
-    type: "toggle",
-    name: "allBranches",
-    message: "Do you want to download all branches? (using git pull --all)",
-    initial: false,
-    active: "Download all branches",
-    inactive: "Only download the default branch",
-  });
-
   await all(
     config.repos.map(({ clone_url, name }) => async () => {
       const repoPath = path.join(config.output, name, "code");
@@ -27,7 +17,7 @@ export const cloneCode = async (config: Config) => {
       await fs.ensureDir(repoPath);
       const git = simpleGit(repoPath);
       git.clone(clone_url!);
-      if (allBranches) {
+      if (config.downloadAllBranches) {
         console.log(`${name}: Downloading all branches...`);
         git.pull(["--all"]);
       }

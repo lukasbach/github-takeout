@@ -1,7 +1,6 @@
 import * as OctokitTypes from "@octokit/types";
 import { Octokit, RestEndpointMethodTypes } from "@octokit/rest";
 import * as fs from "fs-extra";
-import * as https from "https";
 import { pipeline } from "node:stream";
 import { promisify } from "node:util";
 import { createWriteStream } from "fs-extra";
@@ -19,11 +18,18 @@ export interface Config {
   features: string[];
   iterate: IterateFunc;
   output: string;
+  downloadAllBranches: boolean;
+  issueDownloadOption: Array<"report" | "diff" | "patch" | "json">;
+  releasesDownloadOption: Array<"report" | "assets" | "json">;
+  downloadAllReleases: boolean;
+  shouldZip: "no" | "zip" | "tar";
+  compression: number;
   octokit: Octokit;
   repos: (
     | RestEndpointMethodTypes["repos"]["listForOrg"]
     | RestEndpointMethodTypes["repos"]["listForUser"]
   )["response"]["data"];
+  initialRatelimit: { limit: number; remaining: number };
 }
 
 export const downloadFile = async (url: string, target: string, isJson = false, attempts = 0) => {
