@@ -2,7 +2,7 @@ import * as fs from "fs-extra";
 import path from "path";
 import prompts from "prompts";
 import { simpleGit } from "simple-git";
-import { Config } from "./types";
+import { all, Config } from "./common";
 
 export const cloneCode = async (config: Config) => {
   if (!config.features.includes("code")) {
@@ -20,7 +20,7 @@ export const cloneCode = async (config: Config) => {
     inactive: "Only download the default branch",
   });
 
-  await Promise.all(
+  await all(
     config.repos.map(async ({ clone_url, name }) => {
       const repoPath = path.join(config.output, name, "code");
       console.log(`${name}: Cloning ${clone_url} to ${repoPath}...`);

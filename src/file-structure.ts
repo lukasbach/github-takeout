@@ -1,7 +1,7 @@
 import * as fs from "fs-extra";
 import path from "path";
 import prompts from "prompts";
-import { Config } from "./types";
+import { all, Config } from "./common";
 
 export const setupFileStructure = async (config: Config) => {
   console.log(`Using output directory: ${config.output}`);
@@ -26,7 +26,7 @@ export const setupFileStructure = async (config: Config) => {
     await fs.remove(config.output);
   }
 
-  await Promise.all(
+  await all(
     config.repos.map(async ({ name }) => {
       await fs.ensureDir(path.join(config.output, name));
       await fs.outputJSON(path.join(config.output, name, "repo.json"), config);

@@ -2,7 +2,7 @@ import { zip, tar, COMPRESSION_LEVEL } from "zip-a-folder";
 import prompts from "prompts";
 import path from "path";
 import * as fs from "fs-extra";
-import { Config } from "./types";
+import { all, Config } from "./common";
 
 export const zipOutput = async (config: Config) => {
   const { whatToDo } = await prompts({
@@ -31,7 +31,7 @@ export const zipOutput = async (config: Config) => {
     ],
   });
 
-  await Promise.all(
+  await all(
     config.repos.map(async ({ name }) => {
       const folder = path.join(config.output, name);
       if (whatToDo === "zip") {

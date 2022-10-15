@@ -6,7 +6,7 @@ import prompts from "prompts";
 import { Octokit } from "@octokit/rest";
 import * as OctokitTypes from "@octokit/types";
 import { setupFileStructure } from "./file-structure";
-import { Config } from "./types";
+import { Config } from "./common";
 import { cloneCode } from "./code";
 import { zipOutput } from "./zip";
 import { downloadIssues } from "./issues";
@@ -23,6 +23,14 @@ program.parse(process.argv);
     message: "Enter a Github access token (https://github.com/settings/tokens/new):",
   });
 
+  const octokit = new Octokit({ auth });
+  const {
+    data: { rate: initialRatelimit },
+  } = await octokit.rest.rateLimit.get();
+  console.log(
+    `Rate Limit details: You currently have ${initialRatelimit.remaining} of ${initialRatelimit.limit} requests remaining.`
+  );
+
   const { orgOrUser } = await prompts({
     type: "select",
     name: "orgOrUser",
@@ -37,8 +45,6 @@ program.parse(process.argv);
   });
 
   const isOrg = orgOrUser === "org";
-
-  const octokit = new Octokit({ auth });
 
   async function iterate<R extends OctokitTypes.RequestInterface>(
     request: R,
@@ -64,8 +70,7 @@ program.parse(process.argv);
     message: "Which features do you want to download?",
     choices: [
       { title: "Code repo", description: "Requires git installed locally", value: "code", selected: true },
-      { title: "Issues", value: "issues" },
-      { title: "Discussions", value: "discussions" },
+      { title: "Issues including PR diffs", value: "issues", selected: true },
       { title: "Releases", value: "releases" },
     ],
   });
@@ -91,4 +96,14 @@ program.parse(process.argv);
   await cloneCode(config);
   await downloadIssues(config);
   await zipOutput(config);
+
+  console.log("You are done!");
+  const {
+    data: { rate: finalRateLimit },
+  } = await octokit.rest.rateLimit.get();
+  console.log(
+    `\n\nRate Limit details\nYou currently have ${finalRateLimit.remaining} of ${finalRateLimit.limit} requests remaining.`
+  );
+  console.log(`This used up ${initialRatelimit.remaining - finalRateLimit.remaining} requests.`);
+  console.log(`Your rate limit will reset in ${finalRateLimit.reset}TODO minutes.`);
 })();
