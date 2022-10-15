@@ -2,7 +2,9 @@
   "name": "github-takeout",
   "version": "0.0.2",
   "description": "A utility for cloning all your repos, including issues, discussions, stargazers and more!",
-  "bin": "lib/cjs/index.js",
+  "bin": {
+    "github-takeout": "lib/cjs/index.js"
+  },
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
   "esnext": "lib/esnext/index.js",
