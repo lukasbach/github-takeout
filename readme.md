@@ -4,6 +4,16 @@
 
 ![Demo](./demo.gif)
 
+The tool gives you the ability to download a copy of your data on Github. You can highly customize what you want and what not, and also in which form. With all options enabled, the downloaded data includes
+
+- clones of the repositories, optionally with all branches on remote
+- all issues, including PRs, as HTML reports and raw JSON dumps, as well as .diff and .patch files for the PRs
+- release information, including an HTML report of releases, and all release assets (optionally only from the latest release)
+- HTML lists and JSON dumps of your starred/watched repos, stargazer lists of all your repos, lists of deploy keys, secrets and more
+
+If enabled, the tool can also zip every repo individually afterwards. The process runs fairly quickly since most operations are performed parallelized to utilize resources.
+
+
 ## How to use
 
 Install globally via
